@@ -6,13 +6,16 @@ const { exec } = require('child_process');
 const fileUpload=require('express-fileupload');
 const cors = require('cors');
 
+const cookieParser = require('cookie-parser');
+
 
 dotenv.config();
 const port = process.env.PORT||3000;
 
 //Middlewares
-app.use(cors());
+app.use(cors( {credentials: true }));
 app.use(fileUpload());
+app.use(cookieParser());    
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 

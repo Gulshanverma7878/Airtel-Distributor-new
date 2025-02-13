@@ -10,7 +10,7 @@ const CollectorModel = require('../Collectors/collectorModel');
 
 exports.createBT = async (req, res) => {
     try {
-        const { amount, distributeId, BankId, utrNo, type, remark, shopId,ForTo } = req.body;
+        const { amount, distributeId, BankId, utrNo, type, remark, shopId, ForTo } = req.body;
         const bank = await BankModel.findOne({
             where: { id: BankId },
         });
@@ -21,29 +21,32 @@ exports.createBT = async (req, res) => {
         //     return res.status(400).json({ message: "Insufficient balance" });
         // }
 
-        const shop = await ShopModel.findOne({
-            where: { id: shopId },
-            include: [
-                {
-                    model: CollectorModel,
-                    attributes: ['id'],
-                    include: [
-                        {
-                            model: MasterModel,
-                            attributes: ['id'],
-                        },
-                    ]
-                }
-            ]
-        });
+        let shop;
+        if (shopId) {
+            shop = await ShopModel.findOne({
+                where: { id: shopId },
+                include: [
+                    {
+                        model: CollectorModel,
+                        attributes: ['id'],
+                        include: [
+                            {
+                                model: MasterModel,
+                                attributes: ['id'],
+                            },
+                        ]
+                    }
+                ]
+            });
 
+        }
 
         /////master balance
-        let masterId=shop.Collector;
-          
+        let masterId = shop?.Collector ? shop.Collector : null;
+       
         let master;
-        if(masterId){
-            master=await MasterModel.findOne({
+        if (masterId) {
+            master = await MasterModel.findOne({
                 where: { id: masterId.Master.id },
             });
         }
@@ -64,7 +67,7 @@ exports.createBT = async (req, res) => {
                 ? (shop ? parseFloat(bank.balance) + parseFloat(amount) : parseFloat(bank.balance) + parseFloat(amount))
                 : (shop ? parseFloat(bank.balance) - parseFloat(amount) : parseFloat(bank.balance) - parseFloat(amount)),
             ShopBeforeBalances: shop?.balance || null,
-            ShopAfterBalances: type !== "Debit" ? parseFloat(shop?.balance || 0) - parseFloat(amount) : parseFloat(shop?.balance || 0) + parseFloat(amount)||null,
+            ShopAfterBalances: type !== "Debit" ? parseFloat(shop?.balance || 0) - parseFloat(amount) : parseFloat(shop?.balance || 0) + parseFloat(shop?.balance? amount:0) || null,
             // distributorBeforeBalances: master?.main_balance || undefined,
             // distributorAfterBalances: type !== "Debit" ? parseFloat(master?.main_balance || 0) - parseFloat(amount) : parseFloat(master?.main_balance || 0) + parseFloat(amount),
         });
@@ -90,7 +93,7 @@ exports.createBT = async (req, res) => {
                 shop.update({ balance: parseFloat(shop?.balance || 0) - parseFloat(amount) })
             }
         }
-        return res.status(200).json({ message: "BT created successfully",data:req.body });
+        return res.status(200).json({ message: "BT created successfully", data: req.body });
     } catch (error) {
         console.log(error);
         res.status(500).json(error);

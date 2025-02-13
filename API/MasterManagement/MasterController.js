@@ -52,6 +52,7 @@ exports.getMaster = async (req, res) => {
 
 exports.getMasterByColumn = async (req, res) => {
     try {
+        const cookie = req.cookies.token;
         const getMaster= await MasterModel.findOne({ where: { [req.params.column]: req.params.value }, attributes: { exclude: ['password'] } });
         res.status(200).json(getMaster);
     } catch (error) {
@@ -105,9 +106,12 @@ exports.loginMaster = async (req, res) => {
         loginMaster.token = token;
         loginMaster.setDataValue('role', 'MasterAdmin');
         delete loginMaster.dataValues.password;
-        res.status(200).json({ message: "Login successfully", loginMaster, token });
+        res.cookie('token', token, { httpOnly: true },{ maxAge: 24 * 60 * 60 * 1000 });
+       return res.status(200).json({ message: "Login successfully", loginMaster, token });
     } catch (error) {
         console.log(error);
+
+
         return res.status(500).json({ message: "Internal server error" ,error:error}); 
     }
 }
