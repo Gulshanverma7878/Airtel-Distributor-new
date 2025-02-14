@@ -56,7 +56,7 @@ sequelize.sync({ alter: true }).then(() => {
 
 
 
-
+///
 //routes uses 
 
 app.use("/api/admin", signRoute);
