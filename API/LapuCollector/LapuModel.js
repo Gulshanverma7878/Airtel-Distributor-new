@@ -30,7 +30,7 @@ Shops.init({
     balance:{
         type:DataTypes.BIGINT,
         allowNull:true,
-        defaultValue:0
+        //  defaultValue:5000
     }
 }, {
     sequelize,

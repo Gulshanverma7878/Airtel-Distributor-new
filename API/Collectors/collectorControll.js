@@ -93,9 +93,10 @@ exports.loginCollector = async (req, res) => {
             return res.status(400).json({ message: "Invalid password" });
         }
 
-        const token = jwt.sign({ id: collector.id },process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: collector.mobileno },process.env.JWT_SECRET, { expiresIn: '1h' });
         collector.token = token;
         collector.setDataValue('role', 'CollectorAdmin');
+        res.cookie('token', token, { httpOnly: true },{ maxAge: 24 * 60 * 60 * 1000 });
         delete collector.dataValues.password;
         res.status(200).json({ message: "Login successfully", collector, token });
     } catch (error) {

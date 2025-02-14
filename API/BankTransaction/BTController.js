@@ -40,6 +40,7 @@ exports.createBT = async (req, res) => {
             });
 
         }
+        console.log(shop);
 
         /////master balance
         let masterId = shop?.Collector ? shop.Collector : null;

@@ -1,6 +1,7 @@
 const {DataTypes, Model} = require('sequelize');
 const sequelize = require('../../config/database');
 const LapuModel = require('../LapuCollector/LapuModel');
+const LapuTranModel = require('../LapuCollector/LapuTranModel');
 const bcrypt = require('bcryptjs');
 
 class Collector extends Model {}
@@ -50,5 +51,7 @@ Collector.init({
 
 Collector.hasMany(LapuModel, { foreignKey: 'CollectorId' });
 LapuModel.belongsTo(Collector, { foreignKey: 'CollectorId' });
+Collector.hasMany(LapuTranModel, { foreignKey: 'CollectorId' });
+LapuTranModel.belongsTo(Collector, { foreignKey: 'CollectorId' });
 
 module.exports = Collector;

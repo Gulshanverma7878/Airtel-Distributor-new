@@ -84,8 +84,8 @@ LapuModel.init({
 
 }, {
     sequelize,
-    modelName: 'Lapu',
-    tableName: 'lapu',
+    modelName: 'Laputransactions',
+    tableName: 'laputransaction',
     timestamps: true
 });
 
