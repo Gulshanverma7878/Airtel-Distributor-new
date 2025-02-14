@@ -3,6 +3,9 @@
 REM Navigate to the repo folder
 cd "C:\Users\MOHIT\Desktop\Airtel Distributor new"
 
+REM Append current date and time to file.txt (or create it if it doesn't exist)
+echo Automated change on %date% %time% >> file.txt
+
 REM Add all changes
 git add .
 
