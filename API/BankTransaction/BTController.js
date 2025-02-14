@@ -49,6 +49,9 @@ exports.createBT = async (req, res) => {
                 where: { id: masterId.Master.id },
             });
         }
+        if(distributeId){
+            master= await MasterModel.findOne({ where: { id: distributeId } });
+        }
 
 
         //  distributorBeforeBalances: master.balance, distributorAfterBalances: type !== "Debit" ? parseFloat(master.balance) + parseFloat(amount) : parseFloat(master.balance - amount), ShopBeforeBalances: shop.balance,
@@ -77,8 +80,13 @@ exports.createBT = async (req, res) => {
 
             ShopBeforeBalances: shop?.balance || null,
             ShopAfterBalances: type !== "Debit" ? parseFloat(shop?.balance || 0) - parseFloat(amount) : parseFloat(shop?.balance || 0) + parseFloat(shop?.balance ? amount : 0) || null,
-            // distributorBeforeBalances: master?.main_balance || undefined,
-            // distributorAfterBalances: type !== "Debit" ? parseFloat(master?.main_balance || 0) - parseFloat(amount) : parseFloat(master?.main_balance || 0) + parseFloat(amount),
+            distributorBeforeBalances: master?.main_balance || undefined,
+            distributorAfterBalances:type === "refill.digital.collection.complete"
+            ? parseFloat(master?.balance? main_balance : undefined) 
+            : (type !== "Debit"
+                ? (shop ? parseFloat(master.main_balance) + parseFloat(amount) : parseFloat(master.main_balance) + parseFloat(amount))
+                : (shop ? parseFloat(master.main_balance) - parseFloat(amount) : parseFloat(master.main_balance) - parseFloat(amount))
+            ),
         });
 
 
@@ -99,10 +107,10 @@ exports.createBT = async (req, res) => {
                 const master= await MasterModel.findOne({ where: { id: distributeId } }); 
 
            
-                const comm = parseFloat(master.self_com) - parseFloat(master.retailer_com);
+                const comm = parseFloat(master.self_com) //- parseFloat(master.retailer_com);
                 let totalbalanc = parseFloat(amount) + parseFloat(amount * comm / 100);
-                console.log((parseFloat(totalbalanc) + parseFloat(master.balance)));
-                await MasterModel.update({ main_balance: (parseFloat(totalbalanc) + parseFloat(master.balance)) }, {
+                console.log((parseFloat(totalbalanc) + parseFloat(master.main_balance)));
+                await MasterModel.update({ main_balance: (parseFloat(totalbalanc) + parseFloat(master.main_balance)) }, {
                     where: {
                         id: distributeId
                     }
