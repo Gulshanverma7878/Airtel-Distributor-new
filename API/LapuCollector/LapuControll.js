@@ -172,13 +172,13 @@ exports.uploadExcelData = async (req, res) => {
         for (const item of transformedData) {
             const bankId = 3;
             const ShopId = await LapuModel.findOne({ where: { mobileno: item.Retailer_Msisdn } });
-            console.log(`shop:  `, ShopId?.id ? ShopId?.id : "not found");
+           
             const postData = await axios.post(`http://localhost:${process.env.PORT}/api/bank-transaction`, {
                 amount: item.Collectable_Amount,
                 shopId: ShopId?.id ? ShopId.id : null,
                 BankId: bankId,
                 utrNo: item.UTR,
-                type: "Credit",
+                type: item.Status && item.Status == "refill.digital.collection.complete" ?  "refill.digital.collection.complete" : "Credit" ,
                 remark: "EXCEl to database",
                 ForTo: ShopId?.id ? ShopId.id : null
             });

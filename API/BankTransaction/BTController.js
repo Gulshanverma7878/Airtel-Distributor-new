@@ -40,11 +40,9 @@ exports.createBT = async (req, res) => {
             });
 
         }
-        console.log(shop);
-
         /////master balance
         let masterId = shop?.Collector ? shop.Collector : null;
-       
+
         let master;
         if (masterId) {
             master = await MasterModel.findOne({
@@ -64,11 +62,21 @@ exports.createBT = async (req, res) => {
             ForTo,
             remark,
             BeforeBalances: bank.balance,
-            AfterBalances: type !== "Debit"
-                ? (shop ? parseFloat(bank.balance) + parseFloat(amount) : parseFloat(bank.balance) + parseFloat(amount))
-                : (shop ? parseFloat(bank.balance) - parseFloat(amount) : parseFloat(bank.balance) - parseFloat(amount)),
+            // AfterBalances: type !== "Debit"
+            //     ? (shop ? parseFloat(bank.balance) + parseFloat(amount) : parseFloat(bank.balance) + parseFloat(amount))
+            //     : (shop ? parseFloat(bank.balance) - parseFloat(amount) : parseFloat(bank.balance) - parseFloat(amount)),
+
+
+            AfterBalances: type === "refill.digital.collection.complete"
+                ? parseFloat(bank.balance)  // If type is "refill.digital.collection.complete", use the bank balance as is.
+                : (type !== "Debit"
+                    ? (shop ? parseFloat(bank.balance) + parseFloat(amount) : parseFloat(bank.balance) + parseFloat(amount))
+                    : (shop ? parseFloat(bank.balance) - parseFloat(amount) : parseFloat(bank.balance) - parseFloat(amount))
+                ),
+
+
             ShopBeforeBalances: shop?.balance || null,
-            ShopAfterBalances: type !== "Debit" ? parseFloat(shop?.balance || 0) - parseFloat(amount) : parseFloat(shop?.balance || 0) + parseFloat(shop?.balance? amount:0) || null,
+            ShopAfterBalances: type !== "Debit" ? parseFloat(shop?.balance || 0) - parseFloat(amount) : parseFloat(shop?.balance || 0) + parseFloat(shop?.balance ? amount : 0) || null,
             // distributorBeforeBalances: master?.main_balance || undefined,
             // distributorAfterBalances: type !== "Debit" ? parseFloat(master?.main_balance || 0) - parseFloat(amount) : parseFloat(master?.main_balance || 0) + parseFloat(amount),
         });
@@ -76,20 +84,30 @@ exports.createBT = async (req, res) => {
 
 
         if (createBT) {
-            const balance = type == "Debit" ? bank.balance - amount : parseFloat(bank.balance) + parseFloat(amount);
+            const balance = type == "Debit" ? parseFloat( bank.balance) - parseFloat(amount) : parseFloat(bank.balance) + parseFloat(amount);
             console.log(balance, "JJJJ")
-            let updateBank = await BankModel.update({ balance }, { where: { id: BankId } });
-            // if (master) {
-            //     console.log(master.id);
-            //     const comm = parseFloat(master.self_com) - parseFloat(master.retailer_com);
-            //     let totalbalanc = parseFloat(amount) + parseFloat(amount * comm / 100);
-            //     console.log((parseFloat(totalbalanc) + parseFloat(master.balance)));
-            //     master.update({ balance: (parseFloat(totalbalanc) + parseFloat(master.balance)) }, {
-            //         where: {
-            //             id: distributeId
-            //         }
-            //     });
-            // }
+            console.log(type);
+            if(type!=="refill.digital.collection.complete"){
+                const updateBank = await BankModel.update({ balance }, {
+                    where: {
+                        id: BankId
+                    }
+                });
+                // console.log("Entered" + updateBank);
+            }
+            if (distributeId) {
+                const master= await MasterModel.findOne({ where: { id: distributeId } }); 
+
+           
+                const comm = parseFloat(master.self_com) - parseFloat(master.retailer_com);
+                let totalbalanc = parseFloat(amount) + parseFloat(amount * comm / 100);
+                console.log((parseFloat(totalbalanc) + parseFloat(master.balance)));
+                await MasterModel.update({ main_balance: (parseFloat(totalbalanc) + parseFloat(master.balance)) }, {
+                    where: {
+                        id: distributeId
+                    }
+                });
+            }
             if (shop) {
                 shop.update({ balance: parseFloat(shop?.balance || 0) - parseFloat(amount) })
             }

@@ -53,7 +53,7 @@ BTModel.init({
         allowNull: true
     },
     type:{
-        type: DataTypes.ENUM('Debit','Credit','other'),
+        type: DataTypes.STRING,
         allowNull: false,
     },
     remark:{
