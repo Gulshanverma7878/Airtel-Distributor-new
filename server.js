@@ -60,7 +60,6 @@ sequelize.sync({ alter: true }).then(() => {
 //routes uses 
 
 app.use("/api/admin", signRoute);
-app.use("/message", MessageRoute);//
 app.use("/api/bank", BankRoute);
 app.use("/api/bank-transaction", BTRoute);// 
 app.use("/api/master", MasterRoute);

@@ -1,4 +1,4 @@
-const {DataTypes, Model} = require('sequelize');
+const {DataTypes, Model,UUID,UUIDV4} = require('sequelize');
 const sequelize = require('../../config/database');
 const bcrypt = require('bcryptjs');
 
@@ -6,8 +6,8 @@ class Signup extends Model {}
 
 Signup.init({
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: UUIDV4,
         allowNull: false,
         primaryKey: true
     },

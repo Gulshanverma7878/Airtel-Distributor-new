@@ -30,7 +30,7 @@ MasterModel.init(
         company: {
             type: DataTypes.STRING(100),
             allowNull: true,
-            unique: true
+            unique: false
         },
         balance: {
             type: DataTypes.FLOAT,
