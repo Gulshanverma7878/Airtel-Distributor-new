@@ -170,8 +170,9 @@ exports.uploadExcelData = async (req, res) => {
         const transformedData = transformHeaders(data);
 
         for (const item of transformedData) {
-            const bankId = 3;
-            const ShopId = await LapuModel.findOne({ where: { mobileno: item.Retailer_Msisdn } });
+            const bankId = 1;
+            console.log(item);
+            const ShopId = await LapuModel.findOne({ where: { mobileno: item.mobileno } });
            
             const postData = await axios.post(`http://localhost:${process.env.PORT}/api/bank-transaction`, {
                 amount: item.Collectable_Amount,
