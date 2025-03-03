@@ -14,11 +14,6 @@ Shops.init({
         type: DataTypes.STRING(200),
         allowNull: false
     },
-    mobileno:{
-        type:DataTypes.STRING(12),
-        unique:true,
-        allowNull:false,
-    },
     CollectorId: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -27,10 +22,19 @@ Shops.init({
             key: 'id'
         }
     },
-    balance:{
-        type:DataTypes.BIGINT,
-        allowNull:true,
-        defaultValue:5000
+    balance: {
+        type: DataTypes.BIGINT,
+        allowNull: true,
+        defaultValue: 5000
+    },
+    role: {
+        type: DataTypes.ENUM('shop'),
+        defaultValue: "shop",
+    },
+    whatsapp: {
+        type: DataTypes.STRING(12),
+        allowNull: true,
+        defaultValue: "8529670548"
     }
 }, {
     sequelize,

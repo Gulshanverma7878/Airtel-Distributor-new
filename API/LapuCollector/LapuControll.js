@@ -6,17 +6,28 @@ const CollectorModel = require("../Collectors/collectorModel");
 const TransactionModel = require("./LapuTranModel");
 const xlsx = require('xlsx');
 const MasterModel = require('../MasterManagement/MasterModel');
+const { Col } = require("sequelize/lib/utils");
 require('dotenv').config();
 
 
 exports.createLapu = async (req, res) => {
     try {
-        const { name, CollectorId, lapuId } = req.body;
-        const missingFields = ['name', 'CollectorId', 'lapuId'].filter(field => !req.body[field]);
+        const { Retailer_Name, mobileno,balance } = req.body;
+        const missingFields = ['Retailer_Name', 'CollectorId', 'mobileno'].filter(field => !req.body[field]);
         if (missingFields.length > 0) {
             return res.status(400).json({ message: `missing fields values: ${missingFields.join(", ")}` });
         }
-        const createLapu = await LapuModel.create({ name, CollectorId, lapuId })
+        let { CollectorId } = req.body;
+       
+            const collector = await CollectorModel.findOne({ where: { mobileno: CollectorId },attributes: ['id'] });
+
+            console.log(collector);
+            if (!collector) {
+                return res.status(400).json({ message: `Collector not found` });
+            }
+            CollectorId = collector.id;
+       
+        const createLapu = await LapuModel.create({ Retailer_Name, CollectorId, mobileno,balance });
         res.status(200).json({ message: "Lapu created successfully", createLapu });
     } catch (error) {
         console.log(error);

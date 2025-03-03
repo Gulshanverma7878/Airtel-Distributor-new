@@ -34,6 +34,10 @@ Collector.init({
             key: 'id'
         }
     },
+    role:{
+        type:DataTypes.ENUM('Collector'),
+        defaultValue:"Collector",
+    }
     },{
         sequelize,
         modelName: 'Collector',

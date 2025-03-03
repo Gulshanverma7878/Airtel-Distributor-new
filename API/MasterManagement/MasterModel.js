@@ -58,8 +58,11 @@ MasterModel.init(
         },
         status:{
             type: DataTypes.ENUM('Active','Inactive'),
-         
             defaultValue: 'Active'
+        },
+        role:{
+            type:DataTypes.ENUM('Master'),
+            defaultValue:"Master",
         }
     },
     {
@@ -84,5 +87,7 @@ CollectorModel.belongsTo(MasterModel, { foreignKey: 'distributorId' });
 MasterModel.hasMany(MTModel, { foreignKey: 'distributorId' });
 MTModel.belongsTo(MasterModel, { foreignKey: 'distributorId' });
 
+BTModel.belongsTo(MasterModel,{foreignKey:'distributeId'});
+MasterModel.hasMany(BTModel,{foreignKey:'distributeId'});
 
 module.exports = MasterModel;

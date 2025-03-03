@@ -86,8 +86,5 @@ BTModel.init({
 
 
 
-BTModel.belongsTo(MasterModel,{foreignKey:'distributeId'});
-MasterModel.hasMany(BTModel,{foreignKey:'distributeId'});
-
 
 module.exports = BTModel;

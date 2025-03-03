@@ -1,8 +1,11 @@
 const SignupModel = require('./signModel');
+const MasterModel= require('../MasterManagement/MasterModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { Sequelize } = require('sequelize');
+const Collector = require('../Collectors/collectorModel');
+const LapuModel = require('../LapuCollector/LapuModel');
 require('dotenv').config();
 
 
@@ -38,7 +41,16 @@ exports.Signin = async (req, res) => {
     try {
         const { mobileno, password } = req.body;
         
-        const signin = await SignupModel.findOne({ where: { mobileno } });
+        let  signin = await SignupModel.findOne({ where: { mobileno } });
+        if(!signin){
+            signin = await MasterModel.findOne({where:{mobileno}});
+            if(!signin){
+                signin= await Collector.findOne({where:{mobileno}});
+                if(!signin){
+                    signin= await LapuModel.findOne({where:{mobileno}});
+                }
+            }
+        }
         if (!signin) {
             return res.status(400).json({ message: "User not found" });
         }
